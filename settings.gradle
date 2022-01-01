@@ -1,1 +1,3 @@
 rootProject.name = 'spring-batch-study'
+include 'chapter2'
+
