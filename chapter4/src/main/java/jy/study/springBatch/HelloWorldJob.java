@@ -5,9 +5,11 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -44,20 +46,39 @@ public class HelloWorldJob {
     @Bean
     public Step step1() {
         return this.stepBuilderFactory.get("step1")
-                .tasklet(helloWorldTasklet())
+                .tasklet(helloWorldTasklet(null))
                 .build();
     }
 
-    private Tasklet helloWorldTasklet() {
+
+//    private Tasklet helloWorldTasklet() {
+//        return ((contribution, chunkContext) -> {
+//            //JobParameters 참조
+//            String name = (String) chunkContext.getStepContext()
+//                    .getJobParameters()
+//                    .get("name");
+//            System.out.printf("Hello, %s!%n", name);
+//            return RepeatStatus.FINISHED;
+//        });
+//    }
+
+    /*
+     * 늦은 바인딩
+     * 스텝의 실행 범위에 들어갈 때까지 빈 생성을 지연
+     * 명령행 또는 다른 소스에서 받아들인 잡 파라미터를 빈 생성 시점에 주입
+     */
+    @StepScope
+    @Bean
+    public Tasklet helloWorldTasklet(
+            @Value("#{jobParameters['name']}") String name) {
+
         return ((contribution, chunkContext) -> {
-            //JobParameters 참조
-            String name = (String) chunkContext.getStepContext()
-                    .getJobParameters()
-                    .get("name");
             System.out.printf("Hello, %s!%n", name);
             return RepeatStatus.FINISHED;
         });
     }
+
+
 
     public static void main(String[] args) {
         SpringApplication.run(HelloWorldJob.class, args);
