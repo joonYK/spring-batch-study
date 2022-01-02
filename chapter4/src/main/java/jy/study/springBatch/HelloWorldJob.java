@@ -1,11 +1,12 @@
 package jy.study.springBatch;
 
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.job.CompositeJobParametersValidator;
+import org.springframework.batch.core.job.DefaultJobParametersValidator;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.util.StringUtils;
+
+import java.util.Arrays;
 
 //배치 잡 수행에 필요한 인프라스트럭처 제공
 @EnableBatchProcessing
@@ -29,6 +33,7 @@ public class HelloWorldJob {
     public Job job() {
         return this.jobBuilderFactory.get("basicJob")
                 .start(step1())
+                .validator(compositeJobParametersValidator())
                 .build();
     }
 
@@ -78,7 +83,34 @@ public class HelloWorldJob {
         });
     }
 
+    /*
+     * JobBuilder의 유효성 검증이 구성에는 하나의 인스턴스만 지정이 가능하기 때문에,
+     * 여러 개의 유효성 검증기를 사용할 수 있게 제공
+     */
+    @Bean
+    public CompositeJobParametersValidator compositeJobParametersValidator() {
+        CompositeJobParametersValidator compositeValidator = new CompositeJobParametersValidator();
+        DefaultJobParametersValidator validator = defaultJobParametersValidator();
+        validator.afterPropertiesSet();
 
+        compositeValidator.setValidators(
+                Arrays.asList(new ParameterValidator(), validator)
+        );
+
+        return compositeValidator;
+    }
+
+    /*
+     * 스프링 배치에서 제공하는 유효성 검증기
+     */
+    private DefaultJobParametersValidator defaultJobParametersValidator() {
+        DefaultJobParametersValidator validator = new DefaultJobParametersValidator();
+        //필수 파라미터 목록
+        validator.setRequiredKeys(new String[] {"fileName"});
+        //필수가 아닌 파라미터 목록
+        validator.setOptionalKeys(new String[] {"name"});
+        return validator;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(HelloWorldJob.class, args);
