@@ -7,6 +7,7 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.CompositeJobParametersValidator;
 import org.springframework.batch.core.job.DefaultJobParametersValidator;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 
@@ -34,19 +34,10 @@ public class HelloWorldJob {
         return this.jobBuilderFactory.get("basicJob")
                 .start(step1())
                 .validator(compositeJobParametersValidator())
+                //run.id라는 잡 파라미터를 추가하고 실행시마다 증가시켜서 다른 동일한 파라미터들로 잡 수행하도록 지원
+                .incrementer(new RunIdIncrementer())
                 .build();
     }
-
-//    @Bean
-//    public Step step1() {
-//        return this.stepBuilderFactory.get("step1")
-//                //StepContribution : 아직 커밋되지 않은 트랜잭션에 대한 정보(쓰기 수, 읽기 수 등)
-//                //ChunkContext : 실행 시점의 잡 상태 제공
-//                .tasklet((contribution, chunkContext) -> {
-//                    System.out.println("Hello, World!");
-//                    return RepeatStatus.FINISHED;
-//                }).build();
-//    }
 
     @Bean
     public Step step1() {
@@ -54,18 +45,6 @@ public class HelloWorldJob {
                 .tasklet(helloWorldTasklet(null))
                 .build();
     }
-
-
-//    private Tasklet helloWorldTasklet() {
-//        return ((contribution, chunkContext) -> {
-//            //JobParameters 참조
-//            String name = (String) chunkContext.getStepContext()
-//                    .getJobParameters()
-//                    .get("name");
-//            System.out.printf("Hello, %s!%n", name);
-//            return RepeatStatus.FINISHED;
-//        });
-//    }
 
     /*
      * 늦은 바인딩
@@ -108,7 +87,8 @@ public class HelloWorldJob {
         //필수 파라미터 목록
         validator.setRequiredKeys(new String[] {"fileName"});
         //필수가 아닌 파라미터 목록
-        validator.setOptionalKeys(new String[] {"name"});
+        //run.id는 RunIdIncrementer를 도입하게 되면서 필요
+        validator.setOptionalKeys(new String[] {"name", "run.id"});
         return validator;
     }
 
