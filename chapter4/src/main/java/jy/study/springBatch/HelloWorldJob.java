@@ -1,5 +1,7 @@
 package jy.study.springBatch;
 
+import jy.study.springBatch.incrementer.DailyJobTimestamper;
+import jy.study.springBatch.validator.ParameterValidator;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -7,7 +9,6 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.CompositeJobParametersValidator;
 import org.springframework.batch.core.job.DefaultJobParametersValidator;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +35,7 @@ public class HelloWorldJob {
         return this.jobBuilderFactory.get("basicJob")
                 .start(step1())
                 .validator(compositeJobParametersValidator())
-                //run.id라는 잡 파라미터를 추가하고 실행시마다 증가시켜서 다른 동일한 파라미터들로 잡 수행하도록 지원
-                .incrementer(new RunIdIncrementer())
+                .incrementer(new DailyJobTimestamper())
                 .build();
     }
 
@@ -87,8 +87,8 @@ public class HelloWorldJob {
         //필수 파라미터 목록
         validator.setRequiredKeys(new String[] {"fileName"});
         //필수가 아닌 파라미터 목록
-        //run.id는 RunIdIncrementer를 도입하게 되면서 필요
-        validator.setOptionalKeys(new String[] {"name", "run.id"});
+        //incrementer로 DailyJobTimestamper를 사용함에 따라 currentDate 추가
+        validator.setOptionalKeys(new String[] {"name", "currentDate"});
         return validator;
     }
 
