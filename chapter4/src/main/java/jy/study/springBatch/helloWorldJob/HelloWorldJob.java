@@ -1,9 +1,8 @@
-package jy.study.springBatch;
+package jy.study.springBatch.helloWorldJob;
 
-import jy.study.springBatch.incrementer.DailyJobTimestamper;
-import jy.study.springBatch.listener.JobLoggerListener;
-import jy.study.springBatch.listener.JobLoggerListener2;
-import jy.study.springBatch.validator.ParameterValidator;
+import jy.study.springBatch.helloWorldJob.incrementer.DailyJobTimestamper;
+import jy.study.springBatch.helloWorldJob.listener.JobLoggerListener2;
+import jy.study.springBatch.helloWorldJob.validator.ParameterValidator;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -23,8 +22,8 @@ import org.springframework.context.annotation.Bean;
 import java.util.Arrays;
 
 //배치 잡 수행에 필요한 인프라스트럭처 제공
-@EnableBatchProcessing
-@SpringBootApplication
+//@EnableBatchProcessing
+//@SpringBootApplication
 public class HelloWorldJob {
 
     @Autowired
