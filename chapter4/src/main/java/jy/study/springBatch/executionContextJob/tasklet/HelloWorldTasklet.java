@@ -16,12 +16,11 @@ public class HelloWorldTasklet implements Tasklet {
                     .getJobParameters()
                     .get("name");
 
-        ExecutionContext jobContext = chunkContext.getStepContext()
+        ExecutionContext stepExecution = chunkContext.getStepContext()
                                     .getStepExecution()
-                                    .getJobExecution()
                                     .getExecutionContext();
 
-        jobContext.put("user.name", name);
+        stepExecution.put("user.name", name);
 
         System.out.println(String.format(HELLO_WORLD, name));
         return RepeatStatus.FINISHED;
