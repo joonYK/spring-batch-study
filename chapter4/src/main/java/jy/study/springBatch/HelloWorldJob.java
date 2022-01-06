@@ -1,6 +1,7 @@
 package jy.study.springBatch;
 
 import jy.study.springBatch.incrementer.DailyJobTimestamper;
+import jy.study.springBatch.listener.JobLoggerListener;
 import jy.study.springBatch.validator.ParameterValidator;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -36,6 +37,8 @@ public class HelloWorldJob {
                 .start(step1())
                 .validator(compositeJobParametersValidator())
                 .incrementer(new DailyJobTimestamper())
+                //잡 생명주기의 처음과 마지막에 실행할 로직을 추가하는 listener
+                .listener(new JobLoggerListener())
                 .build();
     }
 
