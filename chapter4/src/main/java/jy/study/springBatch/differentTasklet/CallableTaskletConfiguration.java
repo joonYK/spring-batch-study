@@ -1,4 +1,4 @@
-package jy.study.springBatch.callableTaskletAdapter;
+package jy.study.springBatch.differentTasklet;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -14,9 +14,9 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.concurrent.Callable;
 
-@EnableBatchProcessing
-@Configuration
-public class BatchConfiguration {
+//@EnableBatchProcessing
+//@Configuration
+public class CallableTaskletConfiguration {
 
     @Autowired
     private JobBuilderFactory jobBuilderFactory;
