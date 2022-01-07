@@ -4,7 +4,6 @@ import jy.study.springBatch.helloWorldJob.incrementer.DailyJobTimestamper;
 import jy.study.springBatch.helloWorldJob.listener.JobLoggerListener2;
 import jy.study.springBatch.helloWorldJob.validator.ParameterValidator;
 import org.springframework.batch.core.*;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -16,15 +15,15 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
 
 //배치 잡 수행에 필요한 인프라스트럭처 제공
 //@EnableBatchProcessing
-//@SpringBootApplication
-public class HelloWorldJob {
+//@Configuration
+public class BatchConfiguration {
 
     @Autowired
     private JobBuilderFactory jobBuilderFactory;
@@ -98,7 +97,7 @@ public class HelloWorldJob {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(HelloWorldJob.class, args);
+        SpringApplication.run(BatchConfiguration.class, args);
     }
 
 }

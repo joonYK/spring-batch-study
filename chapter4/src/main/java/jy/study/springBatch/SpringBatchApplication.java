@@ -1,13 +1,12 @@
-package jy.study.springBatch.executionContextJob;
+package jy.study.springBatch;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ExecutionContextJob {
+public class SpringBatchApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ExecutionContextJob.class, args);
+        SpringApplication.run(SpringBatchApplication.class, args);
     }
-
 }
