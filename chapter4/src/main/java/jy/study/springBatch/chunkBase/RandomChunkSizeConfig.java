@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-@EnableBatchProcessing
-@Configuration
+//@EnableBatchProcessing
+//@Configuration
 public class RandomChunkSizeConfig {
 
     @Autowired
