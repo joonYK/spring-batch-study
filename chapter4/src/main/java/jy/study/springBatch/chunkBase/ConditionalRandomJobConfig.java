@@ -1,23 +1,25 @@
 package jy.study.springBatch.chunkBase;
 
-
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.flow.FlowExecutionStatus;
+import org.springframework.batch.core.job.flow.JobExecutionDecider;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * ExitStatus로 잡의 진행 방향을 지정.
- */
-//@EnableBatchProcessing
-//@Configuration
-public class ConditionalJobConfig {
+import java.util.Random;
+
+@EnableBatchProcessing
+@Configuration
+public class ConditionalRandomJobConfig {
 
     @Autowired
     private JobBuilderFactory jobBuilderFactory;
@@ -46,21 +48,19 @@ public class ConditionalJobConfig {
         });
     }
 
-    /**
-     * on 메서드는 스프링 배치가 ExitStatus를 평가해 어떤 일을 수행할지 결정할 수 있도록 구성.
-     * firstStep의 종료 코드가 FAILED면 failureStep 스텝으로 이동, FAILED가 아니면 successStep로 이동.
-     */
     @Bean
     public Job job() {
-        return this.jobBuilderFactory.get("conditionalJob")
+        return this.jobBuilderFactory.get("conditionalRandomJob")
                 .start(firstStep())
+                .next(decider())
+                .from(decider())
                 .on("FAILED").to(failureStep())
-                //와일드 카드 *는 0개 이상의 문자를 일치. ex) C* => C, COMPLETE, CORRECT
-                //와일드 카드 ?는 1개의 문자를 일치. ex) ?AT => CAT, KAT
-                .from(firstStep()).on("*").to(successStep())
+                .from(decider())
+                .on("*").to(successStep())
                 .end()
                 .build();
     }
+
 
     @Bean
     public Step firstStep() {
@@ -85,4 +85,25 @@ public class ConditionalJobConfig {
                 .build();
     }
 
+    @Bean
+    public JobExecutionDecider decider() {
+        return new RandomDecider();
+    }
+
+    /**
+     * JobExecutionDecider를 구현해서 다음에 무엇을 수행할지 프로그래밍적으로 결정
+     */
+    public static class RandomDecider implements JobExecutionDecider {
+
+        private final Random random = new Random();
+
+        @Override
+        public FlowExecutionStatus decide(JobExecution jobExecution, StepExecution stepExecution) {
+            if (random.nextBoolean()) {
+                return new FlowExecutionStatus(FlowExecutionStatus.COMPLETED.getName());
+            } else {
+                return new FlowExecutionStatus(FlowExecutionStatus.FAILED.getName());
+            }
+        }
+    }
 }
