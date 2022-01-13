@@ -14,12 +14,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * 스텝의 순서를 외부화하는 첫번째 방법.
- * 스텝의 시퀀스를 독자적인 Flow로 만드는 방법.
+ * 스텝의 순서를 외부화하는 두번째 방법.
+ * 플로우 스텝 사용.
  */
-//@EnableBatchProcessing
-//@Configuration
-public class FlowJobConfig {
+@EnableBatchProcessing
+@Configuration
+public class FlowStepConfig {
 
     @Autowired
     private JobBuilderFactory jobBuilderFactory;
@@ -72,12 +72,22 @@ public class FlowJobConfig {
 
     @Bean
     public Job conditionalStepLogicJob() {
-        return this.jobBuilderFactory.get("conditionalStepLogicJob")
-                //Job 에서 플로우를 참조
-                //Job 내에서 스텝을 직접 구성하는것과 차이는 없음.
-                .start(preProcessingFlow())
+        return this.jobBuilderFactory.get("conditionalStepLogicJob2")
+                //플로우를 래핑한 스텝을 잡 빌더에 전달.
+                //해당 플로우가 담긴 스텝을 하나의 스텝처럼 기록하기 때문에 모니터링과 리포팅에 이점이 있음.
+                //개별 스텝을 집계하지 않고도 플로우의 영향을 전체적으로 볼 수 있음.
+                .start(initializeBatch())
                 .next(runBatch())
-                .end()
+                .build();
+    }
+
+    /**
+     * 플로우를 래핑하는 스텝.
+     */
+    @Bean
+    public Step initializeBatch() {
+        return this.stepBuilderFactory.get("initializeBatch")
+                .flow(preProcessingFlow())
                 .build();
     }
 
