@@ -9,3 +9,7 @@ spring:
   batch:
     jdbc:
       initialize-schema: always
+
+    # 스텝 실행 순서를 외부화하는 방법 중 잡 스텝 방법 사용 시, 메인 잡 지정.
+    job:
+      names: conditionalStepLogicJob3
