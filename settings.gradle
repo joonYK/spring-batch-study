@@ -1,4 +1,5 @@
 rootProject.name = 'spring-batch-study'
 include 'chapter2'
 include 'chapter4'
+include 'chapter5'
 
