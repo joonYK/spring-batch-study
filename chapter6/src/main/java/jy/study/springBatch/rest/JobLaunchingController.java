@@ -29,7 +29,7 @@ public class JobLaunchingController {
         //job에 RunIdIncrementer를 적용했기때문에 run.id라는 파라미터가 추가된 새로운 JobParameters 인스턴스 생성.
         JobParameters jobParameters = new JobParametersBuilder(request.getJobParameters(), this.jobExplorer)
                 //Job이 JobParametersIncremeter를 가지고 있는지 해당 Job을 보고 판별.
-                //JobParametersIncremeter를 가지고 있으면 마지막 JobExecution에 사용됐던 JobParameters에 적용.
+                //JobParametersIncremeter를 가지고 있으면 마지막 JobExecution에 사용됐던 JobParameters를 이용해서 적용.
                 .getNextJobParameters(job)
                 .toJobParameters();
 

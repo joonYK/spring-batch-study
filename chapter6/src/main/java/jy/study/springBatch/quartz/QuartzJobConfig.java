@@ -1,4 +1,4 @@
-package jy.study.springBatch.rest;
+package jy.study.springBatch.quartz;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
@@ -11,29 +11,30 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-//@EnableBatchProcessing
-//@Configuration
+@EnableBatchProcessing
+@Configuration
 @RequiredArgsConstructor
-public class RestApiBatchConfig {
+public class QuartzJobConfig {
 
     private final JobBuilderFactory jobBuilderFactory;
 
     private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
-    public Job restApiJob() {
-        return this.jobBuilderFactory.get("restApiJob")
+    public Job quartzJob() {
+        return this.jobBuilderFactory.get("quartzJob")
                 .incrementer(new RunIdIncrementer())
-                .start(step())
+                .start(quartzStep())
                 .build();
     }
 
     @Bean
-    public Step step() {
-        return this.stepBuilderFactory.get("restApiStep")
-                .tasklet(((contribution, chunkContext) -> {
-                    System.out.println("restApiStep run!");
+    public Step quartzStep() {
+        return this.stepBuilderFactory.get("quartzStep")
+                .tasklet((contribution, chunkContext) -> {
+                    System.out.println("quartzStep run!");
                     return RepeatStatus.FINISHED;
-                })).build();
+                })
+                .build();
     }
 }
