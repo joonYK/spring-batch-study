@@ -1,4 +1,4 @@
-package jy.study.springBatch.quartz;
+package jy.study.springBatch;
 
 import org.quartz.*;
 import org.springframework.context.annotation.Bean;

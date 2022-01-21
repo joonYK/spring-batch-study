@@ -1,4 +1,4 @@
-package jy.study.springBatch.quartz;
+package jy.study.springBatch;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
@@ -8,33 +8,37 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 @EnableBatchProcessing
-@Configuration
+@SpringBootApplication
 @RequiredArgsConstructor
-public class QuartzJobConfig {
+public class Chapter6RestApiBatchApplication {
 
     private final JobBuilderFactory jobBuilderFactory;
 
     private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
-    public Job quartzJob() {
-        return this.jobBuilderFactory.get("quartzJob")
+    public Job restApiJob() {
+        return this.jobBuilderFactory.get("restApiJob")
                 .incrementer(new RunIdIncrementer())
-                .start(quartzStep())
+                .start(step())
                 .build();
     }
 
     @Bean
-    public Step quartzStep() {
-        return this.stepBuilderFactory.get("quartzStep")
-                .tasklet((contribution, chunkContext) -> {
-                    System.out.println("quartzStep run!");
+    public Step step() {
+        return this.stepBuilderFactory.get("restApiStep")
+                .tasklet(((contribution, chunkContext) -> {
+                    System.out.println("restApiStep run!");
                     return RepeatStatus.FINISHED;
-                })
-                .build();
+                })).build();
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(Chapter6RestApiBatchApplication.class, args);
     }
 }

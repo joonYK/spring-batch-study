@@ -1,4 +1,4 @@
-package jy.study.springBatch.quartz;
+package jy.study.springBatch;
 
 import lombok.RequiredArgsConstructor;
 import org.quartz.JobExecutionContext;
@@ -15,7 +15,8 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
  * 일정 이벤트가 발생할 때 잡을 실행하는 매커니즘을 구현.
  */
 @RequiredArgsConstructor
-public class BatchScheduledJob extends QuartzJobBean {
+public class BatchScheduledJob extends QuartzJobBean
+{
 
     private final Job job;
 

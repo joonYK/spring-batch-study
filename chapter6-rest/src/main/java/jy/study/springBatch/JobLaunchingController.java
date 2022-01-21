@@ -1,4 +1,4 @@
-package jy.study.springBatch.rest;
+package jy.study.springBatch;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.ExitStatus;
