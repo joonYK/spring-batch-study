@@ -28,14 +28,15 @@ import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.batch.item.file.transform.FieldSet;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
 import javax.sql.DataSource;
 
 @EnableBatchProcessing
-@Configuration
+@SpringBootApplication
 @RequiredArgsConstructor
 public class Chapter6JobExitExampleApplication {
 
@@ -87,10 +88,9 @@ public class Chapter6JobExitExampleApplication {
     }
 
     /**
+     * transactionFile.csv에서 읽은 데이터들을 DB에 옮기는 작업을 하는 스텝.
      * 거래 정보를 읽는 리더(transactionReader) 및 jdbc 라이터를 사용.
-     * 청크 기반으로 동작하도록 스텝 구성.
      * 잡이 재시작되면 이 스텝이 다시 실행될 수 있도록 구성(레코드 개수와 푸터 레코드가 일치하지 않으면 모든 정보를 초기화하고 다시 실행하길 원함)
-     *
      */
     @Bean
     public Step importTransactionFileStep() {
@@ -159,6 +159,9 @@ public class Chapter6JobExitExampleApplication {
                 .build();
     }
 
+    /**
+     * 거래 정보들을 가져와서 입금/출금 정보를 계좌에 적용하고, 계좌를 DB에 다시 저장하는 스텝.
+     */
     @Bean
     public Step applyTransactionsStep() {
         return this.stepBuilderFactory.get("applyTransactionsStep")
@@ -210,4 +213,7 @@ public class Chapter6JobExitExampleApplication {
 				.build();
     }
 
+    public static void main(String[] args) {
+        SpringApplication.run(Chapter6JobExitExampleApplication.class, args);
+    }
 }

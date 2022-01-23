@@ -22,13 +22,13 @@ public class TransactionDaoSupport extends JdbcTemplate implements TransactionDa
                     "from transaction t inner join account_summary a on " +
                     "a. id = t.account_summary_id " +
                     "where a.account_number = ?",
-                new Object[] { accountNumber },
                 (rs, rowNum) -> {
                     Transaction trans = new Transaction();
                     trans.setAmount(rs.getDouble("amount"));
                     trans.setTimestamp(rs.getDate("timestamp"));
                     return trans;
-                }
+                },
+                accountNumber
         );
     }
 }
