@@ -14,7 +14,7 @@ public class TransactionReader implements ItemStreamReader<Transaction> {
     private int recordCount = 0;
     private int expectedRecordCount = 0;
 
-    private StepExecution stepExecution;
+    //private StepExecution stepExecution;
 
     public TransactionReader(ItemStreamReader<FieldSet> fieldSetReader) {
         this.fieldSetReader = fieldSetReader;
@@ -22,6 +22,7 @@ public class TransactionReader implements ItemStreamReader<Transaction> {
 
     @Override
     public Transaction read() throws Exception {
+        //예외를 발생해서 잡을 실패로 중지하는 방법에 대한 예제
         if (this.recordCount == 25) {
             throw new ParseException("this isn't what I hoped to happen");
         }

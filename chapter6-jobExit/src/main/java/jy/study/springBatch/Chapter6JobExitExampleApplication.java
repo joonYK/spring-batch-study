@@ -233,9 +233,24 @@ public class Chapter6JobExitExampleApplication {
      * 스텝이 FAILED로 식별되면 스텝을 처음부터 다시 시작하지 않음.
      * 예외가 발생한 해당 청크는 롤백하고 재시작시에 그 청크부터 다시 시작.
      */
-    @Bean
+    //@Bean
     public Job failExitJob() {
         return this.jobBuilderFactory.get("failExitJob")
+                .start(importTransactionFileStep())
+                .next(applyTransactionsStep())
+                .next(generateAccountSummaryStep())
+                .build();
+    }
+
+    /**
+     * 재시작 제어 예제 잡
+     * 1. 중지된 잡의 재시작을 방지
+     */
+    @Bean
+    public Job restartControlJob() {
+        return this.jobBuilderFactory.get("restartControlJob")
+                //재시작을 할 수 없도록 한다.
+                .preventRestart()
                 .start(importTransactionFileStep())
                 .next(applyTransactionsStep())
                 .next(generateAccountSummaryStep())
