@@ -95,7 +95,7 @@ public class Chapter6JobExitExampleApplication {
     @Bean
     public Step importTransactionFileStep() {
         return this.stepBuilderFactory.get("importTransactionFileStep")
-                .<Transaction, Transaction>chunk(100)
+                .<Transaction, Transaction>chunk(3)
                 .reader(transactionReader())
                 .writer(transactionWriter(null))
                 .allowStartIfComplete(true)
@@ -165,7 +165,7 @@ public class Chapter6JobExitExampleApplication {
     @Bean
     public Step applyTransactionsStep() {
         return this.stepBuilderFactory.get("applyTransactionsStep")
-                .<AccountSummary, AccountSummary>chunk(100)
+                .<AccountSummary, AccountSummary>chunk(3)
                 .reader(accountSummaryReader(null))
                 .processor(transactionApplierProcessor())
                 .writer(accountSummaryWriter(null))
@@ -196,27 +196,50 @@ public class Chapter6JobExitExampleApplication {
     @Bean
     public Step generateAccountSummaryStep() {
         return this.stepBuilderFactory.get("generateAccountSummaryStep")
-                .<AccountSummary, AccountSummary>chunk(100)
+                .<AccountSummary, AccountSummary>chunk(3)
                 .reader(accountSummaryReader(null))
                 .writer(accountSummaryFileWriter(null))
                 .build();
     }
 
-    @Bean
-    public Job transactionJob() {
-        return this.jobBuilderFactory.get("transactionJob2")
+    /**
+     * 중지 트랜지션 예제 Job
+     */
+    //@Bean
+    public Job stopTransitionJob() {
+        return this.jobBuilderFactory.get("stopTransitionJob")
+				.start(importTransactionFileStep())
+				.on("STOPPED").stopAndRestart(importTransactionFileStep())
+				.from(importTransactionFileStep()).on("*").to(applyTransactionsStep())
+				.from(applyTransactionsStep()).next(generateAccountSummaryStep())
+				.end()
+				.build();
+    }
+
+    /**
+     * StepExecution을 사용한 중지 예제 Job
+     */
+    //@Bean
+    public Job stepExecutionExitJob() {
+        return this.jobBuilderFactory.get("stepExecutionExitJob")
                 .start(importTransactionFileStep())
                 .next(applyTransactionsStep())
                 .next(generateAccountSummaryStep())
                 .build();
+    }
 
-//        return this.jobBuilderFactory.get("transactionJob")
-//				.start(importTransactionFileStep())
-//				.on("STOPPED").stopAndRestart(importTransactionFileStep())
-//				.from(importTransactionFileStep()).on("*").to(applyTransactionsStep())
-//				.from(applyTransactionsStep()).next(generateAccountSummaryStep())
-//				.end()
-//				.build();
+    /**
+     * 예외를 던져 실패상태로 잡 중지 예제 Job.
+     * 스텝이 FAILED로 식별되면 스텝을 처음부터 다시 시작하지 않음.
+     * 예외가 발생한 해당 청크는 롤백하고 재시작시에 그 청크부터 다시 시작.
+     */
+    @Bean
+    public Job failExitJob() {
+        return this.jobBuilderFactory.get("failExitJob")
+                .start(importTransactionFileStep())
+                .next(applyTransactionsStep())
+                .next(generateAccountSummaryStep())
+                .build();
     }
 
     public static void main(String[] args) {

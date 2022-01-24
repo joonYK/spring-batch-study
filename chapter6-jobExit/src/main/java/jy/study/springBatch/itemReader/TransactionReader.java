@@ -22,6 +22,10 @@ public class TransactionReader implements ItemStreamReader<Transaction> {
 
     @Override
     public Transaction read() throws Exception {
+        if (this.recordCount == 25) {
+            throw new ParseException("this isn't what I hoped to happen");
+        }
+
         //실제 읽기 작업을 위임
         return process(fieldSetReader.read());
     }
@@ -51,18 +55,18 @@ public class TransactionReader implements ItemStreamReader<Transaction> {
 
                 //StepExecution을 사용해서 중지.
                 //잡이 STOPPED 상태를 반환하는 대신 스프링 배치가 JobInterruptedException을 던짐.
-                if (expectedRecordCount != this.recordCount) {
-                    this.stepExecution.setTerminateOnly();
-                }
+//                if (expectedRecordCount != this.recordCount) {
+//                    this.stepExecution.setTerminateOnly();
+//                }
             }
         }
         return result;
     }
 
-    @BeforeStep
-    public void beforeStep(StepExecution execution) {
-        this.stepExecution = execution;
-    }
+//    @BeforeStep
+//    public void beforeStep(StepExecution execution) {
+//        this.stepExecution = execution;
+//    }
 
     public void setFieldSetReader(ItemStreamReader<FieldSet> fieldSetReader) {
         this.fieldSetReader = fieldSetReader;
