@@ -90,14 +90,16 @@ public class Chapter6JobExitExampleApplication {
     /**
      * transactionFile.csv에서 읽은 데이터들을 DB에 옮기는 작업을 하는 스텝.
      * 거래 정보를 읽는 리더(transactionReader) 및 jdbc 라이터를 사용.
-     * 잡이 재시작되면 이 스텝이 다시 실행될 수 있도록 구성(레코드 개수와 푸터 레코드가 일치하지 않으면 모든 정보를 초기화하고 다시 실행하길 원함)
      */
     @Bean
     public Step importTransactionFileStep() {
         return this.stepBuilderFactory.get("importTransactionFileStep")
+                //중지된 잡을 재실행할 수 있는 횟수 제한
+                .startLimit(2)
                 .<Transaction, Transaction>chunk(3)
                 .reader(transactionReader())
                 .writer(transactionWriter(null))
+                //중지된 잡 재시작시에 스텝 실행을 성공했더라도 항상 이 스텝이 실행되도록 설정. ex) 유효성을 검증하거나 리소스를 정리하는 스텝
                 .allowStartIfComplete(true)
                 .listener(transactionReader())
                 .build();
@@ -245,12 +247,13 @@ public class Chapter6JobExitExampleApplication {
     /**
      * 재시작 제어 예제 잡
      * 1. 중지된 잡의 재시작을 방지
+     * 2. 재시작할 수 있는 횟수 제한
      */
     @Bean
     public Job restartControlJob() {
         return this.jobBuilderFactory.get("restartControlJob")
                 //재시작을 할 수 없도록 한다.
-                .preventRestart()
+                //.preventRestart()
                 .start(importTransactionFileStep())
                 .next(applyTransactionsStep())
                 .next(generateAccountSummaryStep())
