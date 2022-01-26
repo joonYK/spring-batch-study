@@ -19,10 +19,13 @@ public class Customer {
     private String lastName;
 
     //주소에서 건물 번호 부분
-    private String addressNumber;
+    //private String addressNumber;
+
+    //addressNumber + street
+    private String address;
 
     //거주하는 거리 이름
-	private String street;
+	//private String street;
 
     //거주 도시
     private String city;

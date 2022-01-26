@@ -41,7 +41,8 @@ public class DelimitedFileReadBatchApplication {
                 .names("firstName", "middleInitial", "lastName", "addressNumber",
                         "street", "city", "state", "zipCode")
                 //빌더가 BeanWrapperFieldSetMapper(파일의 레코드를 객체로 변환하는 LineMapper 구현체) 생성.
-                .targetType(Customer.class)
+                //.targetType(Customer.class)
+                .fieldSetMapper(new CustomerFieldSetMapper())
                 .build();
     }
 
