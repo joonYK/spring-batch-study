@@ -1,6 +1,6 @@
-package jy.study.springBatch;
+package jy.suday.springBatch;
 
-import jy.study.springBatch.domain.Customer;
+import jy.suday.springBatch.domain.Customer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -21,7 +21,7 @@ import org.springframework.core.io.Resource;
 @EnableBatchProcessing
 @SpringBootApplication
 @RequiredArgsConstructor
-public class DelimitedFileReadBatchApplication {
+public class FileCustomParsingBatchApplication {
 
     private final JobBuilderFactory jobBuilderFactory;
 
@@ -35,15 +35,9 @@ public class DelimitedFileReadBatchApplication {
         return new FlatFileItemReaderBuilder<Customer>()
                 .name("customerItemReader")
                 .resource(inputFile)
-                //필드가 구분자로 구분된 파일 처리하는 구성. (기본값 쉼표)
-                //DelimitedLineTokenizer. (각 줄을 파싱해 FieldSet으로 만드는 LineTokenizer 구현체)
-                .delimited()
-                //각 레코드에서 파싱해야할 컬럼의 이름들.
-                .names("firstName", "middleInitial", "lastName", "addressNumber",
-                        "street", "city", "state", "zipCode")
-                //빌더가 BeanWrapperFieldSetMapper(파일의 레코드를 객체로 변환하는 LineMapper 구현체) 생성.
-                //.targetType(Customer.class)
-                .fieldSetMapper(new CustomerFieldSetMapper())
+                //파일의 레코드를 파싱하는 방법을 커스텀
+                .lineTokenizer(new CustomFileLineTokenizer())
+                .targetType(Customer.class)
                 .build();
     }
 
@@ -54,7 +48,7 @@ public class DelimitedFileReadBatchApplication {
 
     @Bean
     public Step step() {
-        return this.stepBuilderFactory.get("delimitedFileReadStep")
+        return this.stepBuilderFactory.get("fileCustomParsingStep")
                 .<Customer, Customer>chunk(10)
                 .reader(customerItemReader(null))
                 .writer(itemWriter())
@@ -63,13 +57,13 @@ public class DelimitedFileReadBatchApplication {
 
     @Bean
     public Job job() {
-        return this.jobBuilderFactory.get("delimitedFileReadJob")
+        return this.jobBuilderFactory.get("fileCustomParsingJob")
                 .start(step())
                 .incrementer(new RunIdIncrementer())
                 .build();
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(DelimitedFileReadBatchApplication.class, args);
+        SpringApplication.run(FileCustomParsingBatchApplication.class, args);
     }
 }

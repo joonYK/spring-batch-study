@@ -7,4 +7,5 @@ include 'chapter6-rest'
 include 'chapter6-jobExit'
 include 'chapter7-fixedLength'
 include 'chapter7-delimited'
+include 'chapter7-customParsing'
 
