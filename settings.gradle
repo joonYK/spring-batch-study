@@ -8,4 +8,5 @@ include 'chapter6-jobExit'
 include 'chapter7-fixedLength'
 include 'chapter7-delimited'
 include 'chapter7-customParsing'
+include 'chapter7-multiRecordFormat'
 
