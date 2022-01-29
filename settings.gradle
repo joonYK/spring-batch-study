@@ -9,4 +9,5 @@ include 'chapter7-fixedLength'
 include 'chapter7-delimited'
 include 'chapter7-customParsing'
 include 'chapter7-multiRecordFormat'
+include 'chapter7-multiLineRecord'
 
