@@ -11,4 +11,5 @@ include 'chapter7-customParsing'
 include 'chapter7-multiRecordFormat'
 include 'chapter7-multiLineRecord'
 include 'chapter7-multiResource'
+include 'chapter7-xmlRead'
 
