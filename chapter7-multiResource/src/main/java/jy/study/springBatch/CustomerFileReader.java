@@ -12,14 +12,14 @@ public class CustomerFileReader implements ResourceAwareItemReaderItemStream<Cus
 
     private Object curItem = null;
 
-    private ResourceAwareItemReaderItemStream<Object> delegate;
+    private final ResourceAwareItemReaderItemStream<Object> delegate;
 
     public CustomerFileReader(ResourceAwareItemReaderItemStream<Object> delegate) {
         this.delegate = delegate;
     }
 
     @Override
-    public Customer read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+    public Customer read() throws Exception {
         if (curItem == null)
             curItem = delegate.read();
 
@@ -55,12 +55,12 @@ public class CustomerFileReader implements ResourceAwareItemReaderItemStream<Cus
 
     @Override
     public void open(ExecutionContext executionContext) throws ItemStreamException {
-        delegate.close();
+        delegate.open(executionContext);
     }
 
     @Override
     public void update(ExecutionContext executionContext) throws ItemStreamException {
-        delegate.open(executionContext);
+        delegate.update(executionContext);
     }
 
     @Override

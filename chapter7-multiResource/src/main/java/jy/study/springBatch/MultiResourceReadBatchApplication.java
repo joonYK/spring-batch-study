@@ -42,17 +42,17 @@ public class MultiResourceReadBatchApplication {
     /**
      * 여러개의 파일을 읽어야 하기 때문에 Resource 배열을 파라미터로 받음.
      */
-    @Bean
-    @StepScope
-    public MultiResourceItemReader multiCustomerReader(
-        @Value("#{jobParameters['customerFile']}") Resource[] inputFiles
+	@Bean
+	@StepScope
+	public MultiResourceItemReader multiCustomerReader(
+            @Value("#{jobParameters['customerFile']}") Resource[] inputFiles
     ) {
-        return new MultiResourceItemReaderBuilder<>()
-                .name("multiResourceReader")
-                .resources(inputFiles)
-                .delegate(customerFileReader())
-                .build();
-    }
+		return new MultiResourceItemReaderBuilder<>()
+				.name("multiCustomerReader")
+				.resources(inputFiles)
+				.delegate(customerFileReader())
+				.build();
+	}
 
     @Bean
     public CustomerFileReader customerFileReader() {
@@ -127,23 +127,23 @@ public class MultiResourceReadBatchApplication {
 
     @Bean
     public Step step() {
-        return this.stepBuilderFactory.get("multiRecordReadStep")
+        return this.stepBuilderFactory.get("multiResourceReadStep")
                 .<Customer, Customer>chunk(10)
-                .reader(customerFileReader())
+                .reader(multiCustomerReader(null))
                 .writer(itemWriter())
                 .build();
     }
 
     @Bean
     public Job job() {
-        return this.jobBuilderFactory.get("multiRecordReadJob")
+        return this.jobBuilderFactory.get("multiResourceReadJob")
                 .start(step())
                 .incrementer(new RunIdIncrementer())
                 .build();
     }
 
     public static void main(String[] args) {
-        List<String> realArgs = Collections.singletonList("customerFile=/input/customerMultiFormat*");
+        List<String> realArgs = Collections.singletonList("customerFile=input/*.csv");
 
 		SpringApplication.run(MultiResourceReadBatchApplication.class, realArgs.toArray(new String[1]));
     }
