@@ -7,13 +7,16 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 
 import javax.sql.DataSource;
 
@@ -35,9 +38,19 @@ public class JdbcReadBatchApplication {
         return new JdbcCursorItemReaderBuilder<Customer>()
                 .name("customerItemReader")
                 .dataSource(dataSource)
-                .sql("select * from customer")
+                .sql("select * from customer where city = ?")
                 .rowMapper(new CustomerRowMapper())
+                //SQL에 파라미터를 설정
+                .preparedStatementSetter(citySetter(null))
                 .build();
+    }
+
+    @Bean
+    @StepScope
+    public ArgumentPreparedStatementSetter citySetter(
+            @Value("#{jobParameters['city']}") String city
+    ) {
+        return new ArgumentPreparedStatementSetter(new Object[] {city});
     }
 
     @Bean
@@ -63,6 +76,7 @@ public class JdbcReadBatchApplication {
     }
 
     public static void main(String[] args) {
-		SpringApplication.run(JdbcReadBatchApplication.class, args);
+
+		SpringApplication.run(JdbcReadBatchApplication.class, "city=Chicago");
     }
 }
