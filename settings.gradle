@@ -13,4 +13,5 @@ include 'chapter7-multiLineRecord'
 include 'chapter7-multiResource'
 include 'chapter7-xmlRead'
 include 'chapter7-jsonRead'
+include 'chapter7-jdbc'
 
