@@ -44,7 +44,7 @@ public class JsonReadBatchApplication {
         //JacksonJsonObjectReader는 2가지 의존성이 필요
         //1. 반환할 클래스로 Customer 지정
         JacksonJsonObjectReader<Customer> jsonObjectReader = new JacksonJsonObjectReader<>(Customer.class);
-        //2. ObjectMatter
+        //2. ObjectMapper
         jsonObjectReader.setMapper(objectMapper);
 
         return new JsonItemReaderBuilder<Customer>()

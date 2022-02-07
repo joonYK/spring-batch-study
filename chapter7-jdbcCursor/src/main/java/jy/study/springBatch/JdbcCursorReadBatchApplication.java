@@ -20,10 +20,15 @@ import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 
 import javax.sql.DataSource;
 
+/**
+ * DB에서 row를 하나씩 가져와서 처리.
+ * 백만 단위의 레코드를 처리하려면 네트워크 오버헤드가 추가됨.
+ * ResultSet은 스레드 안전이 보장되지 않아 다중 스레드 환경에서는 사용 불가.
+ */
 @EnableBatchProcessing
 @SpringBootApplication
 @RequiredArgsConstructor
-public class JdbcReadBatchApplication {
+public class JdbcCursorReadBatchApplication {
 
     private final JobBuilderFactory jobBuilderFactory;
 
@@ -60,7 +65,7 @@ public class JdbcReadBatchApplication {
 
     @Bean
     public Step step() {
-        return this.stepBuilderFactory.get("jdbcReadStep")
+        return this.stepBuilderFactory.get("jdbcCursorReadStep")
                 .<Customer, Customer>chunk(10)
                 .reader(customerItemReader(null))
                 .writer(itemWriter())
@@ -69,7 +74,7 @@ public class JdbcReadBatchApplication {
 
     @Bean
     public Job job() {
-        return this.jobBuilderFactory.get("jdbcReadJob")
+        return this.jobBuilderFactory.get("jdbcCursorReadJob")
                 .start(step())
                 .incrementer(new RunIdIncrementer())
                 .build();
@@ -77,6 +82,6 @@ public class JdbcReadBatchApplication {
 
     public static void main(String[] args) {
 
-		SpringApplication.run(JdbcReadBatchApplication.class, "city=Chicago");
+		SpringApplication.run(JdbcCursorReadBatchApplication.class, "city=Chicago");
     }
 }
