@@ -38,11 +38,19 @@ public class JpaReadBatchApplication {
             EntityManagerFactory entityManagerFactory,
             @Value("#{jobParameters['city']}") String city
     ) {
+//        return new JpaPagingItemReaderBuilder<Customer>()
+//                .name("customerItemReader")
+//                .entityManagerFactory(entityManagerFactory)
+//                .queryString("select c from Customer c where c.city = :city")
+//                .parameterValues(Collections.singletonMap("city", city))
+//                .pageSize(10)
+//                .build();
+
+        // queryString 이 아닌 JPA가 제공하는 Query 객체를 사용하는 방법
         return new JpaPagingItemReaderBuilder<Customer>()
                 .name("customerItemReader")
                 .entityManagerFactory(entityManagerFactory)
-                .queryString("select c from Customer c where c.city = :city")
-                .parameterValues(Collections.singletonMap("city", city))
+                .queryProvider(new CustomerByCityQueryProvider(city))
                 .pageSize(10)
                 .build();
     }
