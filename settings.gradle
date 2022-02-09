@@ -18,4 +18,5 @@ include 'chapter7-jdbcPaging'
 include 'chapter7-hibernate'
 include 'chapter7-jpa'
 include 'chapter7-repository'
+include 'chapter7-existingService'
 
