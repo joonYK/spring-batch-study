@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/spring_batch
+    username: root
+    password: 1234
+  sql:
+    init:
+      mode: always
+      platform: mysql
+  jpa:
+    hibernate:
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+  batch:
+    jdbc:
+      # 스프링 부트는 항상 배치 스키마를 생성하려고 시도한다. 스키마가 존재한다면 실패.
+      initialize-schema: always
