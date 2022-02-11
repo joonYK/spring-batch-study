@@ -1,6 +1,8 @@
 package jy.study.springBatch;
 
 import jy.study.springBatch.domain.Customer;
+import jy.study.springBatch.listener.EmptyInputStepFailer;
+import jy.study.springBatch.listener.ErrorLogListener;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -10,12 +12,9 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.step.skip.SkipLimitExceededException;
 import org.springframework.batch.core.step.skip.SkipPolicy;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.ParseException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-
-import java.io.FileNotFoundException;
 
 @EnableBatchProcessing
 @SpringBootApplication
@@ -40,8 +39,13 @@ public class CustomReaderBatchApplication {
     }
 
     @Bean
-    public CustomerItemListener customerListener() {
-        return new CustomerItemListener();
+    public ErrorLogListener customerListener() {
+        return new ErrorLogListener();
+    }
+
+    @Bean
+    public EmptyInputStepFailer emptyFailFailer() {
+        return new EmptyInputStepFailer();
     }
 
     @Bean
@@ -60,6 +64,7 @@ public class CustomReaderBatchApplication {
                 //skip 정책을 통해서도 지정 가능.
                 .skipPolicy(new FileVerificationSkipper())
                 .listener(customerListener())
+                .listener(emptyFailFailer())
                 .build();
     }
 

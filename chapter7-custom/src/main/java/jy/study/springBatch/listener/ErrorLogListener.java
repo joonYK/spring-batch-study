@@ -1,12 +1,12 @@
-package jy.study.springBatch;
+package jy.study.springBatch.listener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.batch.core.annotation.OnReadError;
 
-public class CustomerItemListener {
+public class ErrorLogListener {
 
-    private static final Log logger = LogFactory.getLog(CustomerItemListener.class);
+    private static final Log logger = LogFactory.getLog(ErrorLogListener.class);
 
     @OnReadError
     public void onReadError(Exception e) {
