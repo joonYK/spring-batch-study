@@ -40,6 +40,11 @@ public class CustomReaderBatchApplication {
     }
 
     @Bean
+    public CustomerItemListener customerListener() {
+        return new CustomerItemListener();
+    }
+
+    @Bean
     public Step step() {
         return this.stepBuilderFactory.get("customReaderStep")
                 .<Customer, Customer>chunk(10)
@@ -54,6 +59,7 @@ public class CustomReaderBatchApplication {
 //                .skipLimit(10)
                 //skip 정책을 통해서도 지정 가능.
                 .skipPolicy(new FileVerificationSkipper())
+                .listener(customerListener())
                 .build();
     }
 
