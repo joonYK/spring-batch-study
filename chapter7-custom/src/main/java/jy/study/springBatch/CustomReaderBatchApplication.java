@@ -46,12 +46,14 @@ public class CustomReaderBatchApplication {
                 .reader(customerItemReader())
                 .writer(itemWriter())
                 .faultTolerant()
-                //해당 예외타입은 건너뛰지 않음.
-                .noSkip(Exception.class)
-                //해당 예외 타입은 레코드를 건너뜀.
-                .skip(RuntimeException.class)
-                //해당 예외 타입에 대해서는 총 10회까지만 건너뛸 수 있음.
-                .skipLimit(10)
+//                //해당 예외타입은 건너뛰지 않음.
+//                .noSkip(Exception.class)
+//                //해당 예외 타입은 레코드를 건너뜀.
+//                .skip(RuntimeException.class)
+//                //해당 예외 타입에 대해서는 총 10회까지만 건너뛸 수 있음.
+//                .skipLimit(10)
+                //skip 정책을 통해서도 지정 가능.
+                .skipPolicy(new FileVerificationSkipper())
                 .build();
     }
 
@@ -64,5 +66,18 @@ public class CustomReaderBatchApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(CustomReaderBatchApplication.class, args);
+    }
+
+    public static class FileVerificationSkipper implements SkipPolicy {
+
+        @Override
+        public boolean shouldSkip(Throwable t, int skipCount) throws SkipLimitExceededException {
+            //예외 타입이 RuntimeException 이고 총 건너뛴 레코드가 10개 이하면 레코드 건너뛰기 가능.
+            if (t instanceof RuntimeException && skipCount <= 10) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 }
