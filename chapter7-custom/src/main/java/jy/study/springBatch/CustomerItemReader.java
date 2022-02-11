@@ -62,6 +62,7 @@ public class CustomerItemReader extends ItemStreamSupport implements ItemReader<
 
         //50번째 Customer 객체를 처리한 뒤에 잡을 강제로 종료.
         if (curIndex == 50) {
+            curIndex++;
             throw new RuntimeException("This will end your execution");
         }
 

@@ -7,11 +7,15 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.step.skip.SkipLimitExceededException;
+import org.springframework.batch.core.step.skip.SkipPolicy;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.ParseException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+
+import java.io.FileNotFoundException;
 
 @EnableBatchProcessing
 @SpringBootApplication
@@ -41,6 +45,13 @@ public class CustomReaderBatchApplication {
                 .<Customer, Customer>chunk(10)
                 .reader(customerItemReader())
                 .writer(itemWriter())
+                .faultTolerant()
+                //해당 예외타입은 건너뛰지 않음.
+                .noSkip(Exception.class)
+                //해당 예외 타입은 레코드를 건너뜀.
+                .skip(RuntimeException.class)
+                //해당 예외 타입에 대해서는 총 10회까지만 건너뛸 수 있음.
+                .skipLimit(10)
                 .build();
     }
 
