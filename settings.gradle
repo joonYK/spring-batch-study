@@ -21,4 +21,5 @@ include 'chapter7-repository'
 include 'chapter7-existingService'
 include 'chapter7-custom'
 include 'chapter8-validating'
+include 'chapter8-customValidating'
 
