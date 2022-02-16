@@ -24,4 +24,5 @@ include 'chapter8-validating'
 include 'chapter8-customValidating'
 include 'chapter8-adapter'
 include 'chapter8-script'
+include 'chapter8-composite'
 
