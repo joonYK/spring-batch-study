@@ -26,4 +26,5 @@ include 'chapter8-adapter'
 include 'chapter8-script'
 include 'chapter8-composite'
 include 'chapter8-classifierComposite'
+include 'chapter8-custom'
 
