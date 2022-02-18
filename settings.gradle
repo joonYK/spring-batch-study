@@ -27,4 +27,5 @@ include 'chapter8-script'
 include 'chapter8-composite'
 include 'chapter8-classifierComposite'
 include 'chapter8-custom'
+include 'chapter9-formattedTextFile'
 

@@ -75,7 +75,7 @@ public class CustomerItemReader extends ItemStreamSupport implements ItemReader<
     }
 
     /**
-     * close 메서드는 리소스를 닫는데 사용.ㄴ
+     * close 메서드는 리소스를 닫는데 사용.
      */
     @Override
     public void close() {
