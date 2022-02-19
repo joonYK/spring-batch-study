@@ -10,19 +10,23 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
-import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder;
+import org.springframework.batch.item.xml.StaxEventItemWriter;
+import org.springframework.batch.item.xml.builder.StaxEventItemWriterBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
+import org.springframework.oxm.xstream.XStreamMarshaller;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @EnableBatchProcessing
 @SpringBootApplication
 @RequiredArgsConstructor
-public class DelimitedTextFileWriterBatchApplication {
+public class XmlFileWriterBatchApplication {
 
     private final JobBuilderFactory jobBuilderFactory;
 
@@ -45,41 +49,47 @@ public class DelimitedTextFileWriterBatchApplication {
 
     @Bean
     @StepScope
-    public FlatFileItemWriter<Customer> customerItemWriter(
+    public StaxEventItemWriter<Customer> xmlCustomerWriter(
             @Value("#{jobParameters['outputFile']}") Resource outputFile
     ) {
-        return new FlatFileItemWriterBuilder<Customer>()
+        Map<String, Class> aliases = new HashMap<>();
+        aliases.put("customer", Customer.class);
+
+        XStreamMarshaller marshaller = new XStreamMarshaller();
+        marshaller.setAliases(aliases);
+        marshaller.afterPropertiesSet();
+
+        return new StaxEventItemWriterBuilder<Customer>()
                 .name("customerItemWriter")
+                //출력으로 쓸 리소스
                 .resource(outputFile)
-                .delimited()
-                .delimiter(";")
-                .names(new String[] {
-                        "zipCode", "state", "city",
-                        "address", "lastName", "firstName"
-                })
+                //마샬러 구현체 (잡이 처리한 각 아이템을 XML 프래그먼트로 변환)
+                .marshaller(marshaller)
+                //마샬러사 생성할 각 XML 프래그먼트 루트 태그 이름
+                .rootTagName("customers")
                 .build();
     }
 
     @Bean
     public Step step() {
-        return this.stepBuilderFactory.get("delimitedTextFileWriteStep")
+        return this.stepBuilderFactory.get("xmlFileFileWriteStep")
                 .<Customer, Customer>chunk(5)
                 .reader(customerItemReader(null))
-                .writer(customerItemWriter(null))
+                .writer(xmlCustomerWriter(null))
                 .build();
     }
 
     @Bean
     public Job job() {
-        return this.jobBuilderFactory.get("delimitedTextFileWriteJob")
+        return this.jobBuilderFactory.get("xmlFileFileWriteJob")
                 .start(step())
                 .incrementer(new RunIdIncrementer())
                 .build();
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(DelimitedTextFileWriterBatchApplication.class,
+        SpringApplication.run(XmlFileWriterBatchApplication.class,
                 "customerFile=/input/customer.csv",
-                "outputFile=file:output/delimitedCustomers.txt");
+                "outputFile=file:output/xmlCustomer.xml");
     }
 }

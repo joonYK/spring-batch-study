@@ -29,4 +29,5 @@ include 'chapter8-classifierComposite'
 include 'chapter8-custom'
 include 'chapter9-formattedTextFile'
 include 'chapter9-delimitedTextFile'
+include 'chapter9-xml'
 
