@@ -17,15 +17,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-
-import java.net.URL;
 
 @EnableBatchProcessing
 @SpringBootApplication
 @RequiredArgsConstructor
-public class FormattedTextFileWriterBatchApplication {
+public class DelimitedTextFileWriterBatchApplication {
 
     private final JobBuilderFactory jobBuilderFactory;
 
@@ -54,11 +51,11 @@ public class FormattedTextFileWriterBatchApplication {
         return new FlatFileItemWriterBuilder<Customer>()
                 .name("customerItemWriter")
                 .resource(outputFile)
-                .formatted()
-                .format("%s %s lives at %s %s in %s, %s.")
+                .delimited()
+                .delimiter(";")
                 .names(new String[] {
-                        "firstName", "lastName", "address",
-                        "city", "state", "zipCode"
+                        "zipCode", "state", "city",
+                        "address", "lastName", "firstName"
                 })
                 .build();
     }
@@ -81,7 +78,7 @@ public class FormattedTextFileWriterBatchApplication {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(FormattedTextFileWriterBatchApplication.class,
+        SpringApplication.run(DelimitedTextFileWriterBatchApplication.class,
                 "customerFile=/input/customer.csv",
                 "outputFile=file:output/formattedCustomers.txt");
     }
