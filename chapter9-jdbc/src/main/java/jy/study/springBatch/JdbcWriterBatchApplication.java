@@ -45,6 +45,29 @@ public class JdbcWriterBatchApplication {
                 .build();
     }
 
+    /**
+     * JdbcBatchItemWriter PreparedStatement 표기법
+     */
+//    @Bean
+//    @StepScope
+//    public JdbcBatchItemWriter<Customer> jdbcCustomerWriter(DataSource dataSource) {
+//        return new JdbcBatchItemWriterBuilder<Customer>()
+//                .dataSource(dataSource)
+//                .sql("INSERT INTO CUSTOMER (" +
+//                        "first_name, " +
+//                        "middle_initial, " +
+//                        "last_name, " +
+//                        "address, " +
+//                        "city, " +
+//                        "state, " +
+//                        "zipcode) VALUES (?, ?, ?, ?, ?, ?, ?)")
+//                .itemPreparedStatementSetter(new CustomerItemPreparedStatementSetter())
+//                .build();
+//    }
+
+    /**
+     * JdbcBatchItemWriter named parameter 표기법
+     */
     @Bean
     @StepScope
     public JdbcBatchItemWriter<Customer> jdbcCustomerWriter(DataSource dataSource) {
@@ -57,8 +80,15 @@ public class JdbcWriterBatchApplication {
                         "address, " +
                         "city, " +
                         "state, " +
-                        "zipcode) VALUES (?, ?, ?, ?, ?, ?, ?)")
-                .itemPreparedStatementSetter(new CustomerItemPreparedStatementSetter())
+                        "zipcode) VALUES (" +
+                        ":firstName, " +
+                        ":middleInitial, " +
+                        ":lastName, " +
+                        ":address, " +
+                        ":city, " +
+                        ":state, " +
+                        "zipCode)")
+                .beanMapped()
                 .build();
     }
 
