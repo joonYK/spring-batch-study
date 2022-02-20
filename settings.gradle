@@ -30,4 +30,5 @@ include 'chapter8-custom'
 include 'chapter9-formattedTextFile'
 include 'chapter9-delimitedTextFile'
 include 'chapter9-xml'
+include 'chapter9-jdbc'
 
