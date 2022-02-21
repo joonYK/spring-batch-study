@@ -31,4 +31,5 @@ include 'chapter9-formattedTextFile'
 include 'chapter9-delimitedTextFile'
 include 'chapter9-xml'
 include 'chapter9-jdbc'
+include 'chapter9-hibernate'
 
