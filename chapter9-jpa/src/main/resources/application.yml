@@ -8,10 +8,6 @@ spring:
     init:
       mode: always
       platform: mysql
-  jpa:
-    properties:
-      hibernate:
-        current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
 
   batch:
     jdbc:

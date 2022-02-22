@@ -19,18 +19,18 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 @Component
-public class HibernateBatchConfigurer implements BatchConfigurer {
+public class JpaBatchConfigurer implements BatchConfigurer {
 
     private DataSource dataSource;
-    private SessionFactory sessionFactory;
+    private EntityManagerFactory entityManagerFactory;
     private JobRepository jobRepository;
     private PlatformTransactionManager transactionManager;
     private JobLauncher jobLauncher;
     private JobExplorer jobExplorer;
 
-    public HibernateBatchConfigurer(DataSource dataSource, EntityManagerFactory entityManagerFactory) {
+    public JpaBatchConfigurer(DataSource dataSource, EntityManagerFactory entityManagerFactory) {
         this.dataSource = dataSource;
-        this.sessionFactory = entityManagerFactory.unwrap(SessionFactory.class);
+        this.entityManagerFactory = entityManagerFactory;
     }
 
     @Override
@@ -57,7 +57,8 @@ public class HibernateBatchConfigurer implements BatchConfigurer {
     public void initialize() {
 
         try {
-            HibernateTransactionManager transactionManager = new HibernateTransactionManager(sessionFactory);
+            JpaTransactionManager transactionManager =
+                    new JpaTransactionManager(entityManagerFactory);
             transactionManager.afterPropertiesSet();
 
             this.transactionManager = transactionManager;
