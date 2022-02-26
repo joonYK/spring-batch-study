@@ -34,4 +34,5 @@ include 'chapter9-jdbc'
 include 'chapter9-hibernate'
 include 'chapter9-jpa'
 include 'chapter9-repository'
+include 'chapter9-WriterAdapter'
 
