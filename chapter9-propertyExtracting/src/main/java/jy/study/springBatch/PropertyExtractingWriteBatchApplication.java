@@ -11,6 +11,7 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.adapter.ItemWriterAdapter;
+import org.springframework.batch.item.adapter.PropertyExtractingDelegatingItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +23,7 @@ import org.springframework.core.io.Resource;
 @EnableBatchProcessing
 @SpringBootApplication
 @RequiredArgsConstructor
-public class WriterAdapterBatchApplication {
+public class PropertyExtractingWriteBatchApplication {
 
 
     private final JobBuilderFactory jobBuilderFactory;
@@ -45,18 +46,21 @@ public class WriterAdapterBatchApplication {
     }
 
     @Bean
-    public ItemWriterAdapter<Customer> itemWriter(CustomerService customerService) {
-        ItemWriterAdapter<Customer> customerItemWriterAdapter = new ItemWriterAdapter<>();
+    public PropertyExtractingDelegatingItemWriter<Customer> itemWriter(CustomerService customerService) {
+        PropertyExtractingDelegatingItemWriter<Customer> itemWriter =
+                new PropertyExtractingDelegatingItemWriter<>();
 
-        customerItemWriterAdapter.setTargetObject(customerService);
-        customerItemWriterAdapter.setTargetMethod("logCustomer");
+        itemWriter.setTargetObject(customerService);
+        itemWriter.setTargetMethod("logCustomerAddress");
+        itemWriter.setFieldsUsedAsTargetMethodArguments(
+                new String[] {"address", "city", "state", "zipcode"});
 
-        return customerItemWriterAdapter;
+        return itemWriter;
     }
 
     @Bean
     public Step step() {
-        return this.stepBuilderFactory.get("adapterWriteStep")
+        return this.stepBuilderFactory.get("propertiesExtractingWriteStep")
                 .<Customer, Customer>chunk(10)
                 .reader(customerItemReader(null))
                 .writer(itemWriter(null))
@@ -65,13 +69,13 @@ public class WriterAdapterBatchApplication {
 
     @Bean
     public Job job() {
-        return this.jobBuilderFactory.get("adapterWriteJob")
+        return this.jobBuilderFactory.get("propertiesExtractingWriteJob")
                 .start(step())
                 .incrementer(new RunIdIncrementer())
                 .build();
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(WriterAdapterBatchApplication.class, "customerFile=/input/customer.csv");
+        SpringApplication.run(PropertyExtractingWriteBatchApplication.class, "customerFile=/input/customer.csv");
     }
 }

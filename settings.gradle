@@ -35,4 +35,5 @@ include 'chapter9-hibernate'
 include 'chapter9-jpa'
 include 'chapter9-repository'
 include 'chapter9-WriterAdapter'
+include 'chapter9-propertyExtracting'
 
