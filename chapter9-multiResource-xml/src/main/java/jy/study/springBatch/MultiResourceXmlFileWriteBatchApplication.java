@@ -28,7 +28,7 @@ import java.util.Map;
 @EnableBatchProcessing
 @SpringBootApplication
 @RequiredArgsConstructor
-public class MultiResourceWriteBatchApplication {
+public class MultiResourceXmlFileWriteBatchApplication {
 
 
     private final JobBuilderFactory jobBuilderFactory;
@@ -36,6 +36,8 @@ public class MultiResourceWriteBatchApplication {
     private final StepBuilderFactory stepBuilderFactory;
 
     private final CustomerOutputFileSuffixCreator suffixCreator;
+
+    private final CustomerXmlHeaderCallback headerCallback;
 
     @Bean
     public JdbcCursorItemReader<Customer>  customerJdbcCursorItemReader(DataSource dataSource) {
@@ -60,6 +62,8 @@ public class MultiResourceWriteBatchApplication {
                 .name("customerItemWriter")
                 .marshaller(marshaller)
                 .rootTagName("customers")
+                //rootTag내의 최상단에 xml 태그 추가
+                .headerCallback(headerCallback)
                 .build();
     }
 
@@ -74,7 +78,7 @@ public class MultiResourceWriteBatchApplication {
                  * 25개째에 리소스를 새로 열어야하지만 청크는 10개 단위이므로 5개를 더 추가로 작성해야함.
                  */
                 .itemCountLimitPerResource(25)
-                .resource(new FileSystemResource("chapter9-multiResource/output/customer"))
+                .resource(new FileSystemResource("chapter9-multiResource-xml/output/customer"))
                 //파일 확장자 적용
                 .resourceSuffixCreator(suffixCreator)
                 .build();
@@ -98,6 +102,6 @@ public class MultiResourceWriteBatchApplication {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(MultiResourceWriteBatchApplication.class, "customerFile=/input/customer.csv");
+        SpringApplication.run(MultiResourceXmlFileWriteBatchApplication.class, "customerFile=/input/customer.csv");
     }
 }

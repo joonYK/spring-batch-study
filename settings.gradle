@@ -36,5 +36,5 @@ include 'chapter9-jpa'
 include 'chapter9-repository'
 include 'chapter9-WriterAdapter'
 include 'chapter9-propertyExtracting'
-include 'chapter9-multiResource'
+include 'chapter9-multiResource-xml'
 
