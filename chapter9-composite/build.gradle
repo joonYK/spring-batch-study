@@ -1,0 +1,4 @@
+dependencies {
+    implementation 'org.springframework:spring-oxm'
+    implementation 'com.thoughtworks.xstream:xstream:1.4.19'
+}
