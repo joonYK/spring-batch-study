@@ -39,4 +39,5 @@ include 'chapter9-propertyExtracting'
 include 'chapter9-multiResource-xml'
 include 'chapter9-multiResource-flatFile'
 include 'chapter9-composite'
+include 'chapter9-classifierComposite'
 
