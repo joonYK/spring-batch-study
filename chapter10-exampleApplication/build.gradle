@@ -1,0 +1,4 @@
+dependencies {
+    implementation 'org.springframework:spring-oxm'
+    implementation 'org.hsqldb:hsqldb'
+}
