@@ -1,22 +1,23 @@
-package jy.study.springBatch.configuration;
+package jy.study.springBatch.job;
 
 import jy.study.springBatch.domain.CustomerAddressUpdate;
 import jy.study.springBatch.domain.CustomerContactUpdate;
 import jy.study.springBatch.domain.CustomerNameUpdate;
 import jy.study.springBatch.domain.CustomerUpdate;
+import jy.study.springBatch.itemProcessor.CustomerItemValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
-import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.FieldSetMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.batch.item.file.transform.LineTokenizer;
 import org.springframework.batch.item.file.transform.PatternMatchingCompositeLineTokenizer;
+import org.springframework.batch.item.validator.ValidatingItemProcessor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -127,6 +128,18 @@ public class ImportJobConfiguration {
                         "Invalid record type was found:" + fieldSet.readInt("recordId"));
             }
         };
+    }
+
+    @Bean
+    public ValidatingItemProcessor<CustomerUpdate> customerValidatingItemProcessor(
+            CustomerItemValidator validator
+    ) {
+        ValidatingItemProcessor<CustomerUpdate> customerValidatingItemProcessor =
+                new ValidatingItemProcessor<>(validator);
+
+        customerValidatingItemProcessor.setFilter(true);
+
+        return customerValidatingItemProcessor;
     }
 
 }
