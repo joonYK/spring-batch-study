@@ -1,9 +1,9 @@
 package jy.study.springBatch.itemWriter;
 
-import jy.study.springBatch.domain.CustomerAddressUpdate;
-import jy.study.springBatch.domain.CustomerContactUpdate;
-import jy.study.springBatch.domain.CustomerNameUpdate;
-import jy.study.springBatch.domain.CustomerUpdate;
+import jy.study.springBatch.domain.customer.CustomerAddressUpdate;
+import jy.study.springBatch.domain.customer.CustomerContactUpdate;
+import jy.study.springBatch.domain.customer.CustomerNameUpdate;
+import jy.study.springBatch.domain.customer.CustomerUpdate;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.classify.Classifier;

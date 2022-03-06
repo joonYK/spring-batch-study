@@ -1,5 +1,6 @@
 package jy.study.springBatch.domain;
 
+import jy.study.springBatch.domain.transaction.Transaction;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

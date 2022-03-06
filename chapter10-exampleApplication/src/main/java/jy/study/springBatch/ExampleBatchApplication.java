@@ -10,6 +10,8 @@ public class ExampleBatchApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(ExampleBatchApplication.class,
-                "customerUpdateFile=/input/customer_update.csv");
+                "customerUpdateFile=/input/customer_update.csv",
+                "transactionFile=/input/transactions.xml");
+
     }
 }

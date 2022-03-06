@@ -1,4 +1,4 @@
-package jy.study.springBatch.domain;
+package jy.study.springBatch.domain.customer;
 
 import lombok.Getter;
 

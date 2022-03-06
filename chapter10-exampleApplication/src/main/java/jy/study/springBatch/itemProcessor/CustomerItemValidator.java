@@ -1,6 +1,6 @@
 package jy.study.springBatch.itemProcessor;
 
-import jy.study.springBatch.domain.CustomerUpdate;
+import jy.study.springBatch.domain.customer.CustomerUpdate;
 import org.springframework.batch.item.validator.ValidationException;
 import org.springframework.batch.item.validator.Validator;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
