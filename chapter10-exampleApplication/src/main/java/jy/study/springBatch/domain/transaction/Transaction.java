@@ -1,15 +1,13 @@
 package jy.study.springBatch.domain.transaction;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
 import java.util.Date;
 
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
