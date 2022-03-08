@@ -40,7 +40,7 @@ public class AccountItemProcessor implements ItemProcessor<Statement, Statement>
                         "transaction t on a.account_id = t.account_account_id " +
                 "WHERE " +
                     "a.account_id in " +
-                    "(SELECT account_account_id" +
+                    "(SELECT account_account_id " +
                     "FROM customer_account " +
                     "WHERE customer_customer_id = ?) " +
                 "ORDER BY t.timestamp";

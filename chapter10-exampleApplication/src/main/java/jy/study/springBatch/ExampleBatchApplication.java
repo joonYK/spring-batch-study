@@ -11,7 +11,8 @@ public class ExampleBatchApplication {
     public static void main(String[] args) {
         SpringApplication.run(ExampleBatchApplication.class,
                 "customerUpdateFile=/input/customer_update.csv",
-                "transactionFile=/input/transactions.xml");
+                "transactionFile=/input/transactions.xml",
+                "outputDirectory=output");
 
     }
 }

@@ -3,14 +3,21 @@ package jy.study.springBatch.job.steps;
 import jy.study.springBatch.domain.Statement;
 import jy.study.springBatch.domain.customer.Customer;
 import jy.study.springBatch.itemProcessor.AccountItemProcessor;
+import jy.study.springBatch.itemWriter.StatementHeaherCallback;
+import jy.study.springBatch.itemWriter.StatementLineAggregator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
+import org.springframework.batch.item.file.FlatFileItemWriter;
+import org.springframework.batch.item.file.MultiResourceItemWriter;
+import org.springframework.batch.item.file.builder.MultiResourceItemWriterBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
 
 import javax.sql.DataSource;
 
@@ -58,6 +65,30 @@ public class GenerateStatementConfiguration {
 
                     return new Statement(customer);
                 })
+                .build();
+    }
+
+    @Bean
+    public FlatFileItemWriter<Statement> individualStatementItemWriter() {
+        FlatFileItemWriter<Statement> itemWriter = new FlatFileItemWriter<>();
+
+        itemWriter.setName("individualStatementItemWriter");
+        itemWriter.setHeaderCallback(new StatementHeaherCallback());
+        itemWriter.setLineAggregator(new StatementLineAggregator());
+
+        return itemWriter;
+    }
+
+    @Bean
+    @StepScope
+    public MultiResourceItemWriter<Statement> statementItemWriter(
+            @Value("#{jobParameters['outputDirectory']}") Resource outputDir
+    ) {
+        return new MultiResourceItemWriterBuilder<Statement>()
+                .name("statementItemWriter")
+                .resource(outputDir)
+                .itemCountLimitPerResource(1)
+                .delegate(individualStatementItemWriter())
                 .build();
     }
 }

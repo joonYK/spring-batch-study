@@ -20,12 +20,15 @@ public class ImportJobConfiguration {
 
     private final Step applyTransactions;
 
+    private final Step generateStatements;
+
     @Bean
     public Job job() {
         return this.jobBuilderFactory.get("importJob")
                 .start(importCustomerUpdates)
                 .next(importTransactions)
                 .next(applyTransactions)
+                .next(generateStatements)
                 .incrementer(new RunIdIncrementer())
                 .build();
     }
