@@ -1,6 +1,7 @@
 package jy.study.springBatch.domain.customer;
 
 import lombok.Getter;
+import org.springframework.util.StringUtils;
 
 @Getter
 public class CustomerAddressUpdate extends CustomerUpdate {
@@ -17,10 +18,10 @@ public class CustomerAddressUpdate extends CustomerUpdate {
 
     public CustomerAddressUpdate(long customerId, String address1, String address2, String city, String state, String postalCode) {
         super(customerId);
-        this.address1 = address1;
-        this.address2 = address2;
-        this.city = city;
-        this.state = state;
-        this.postalCode = postalCode;
+        this.address1 = StringUtils.hasText(address1) ? address1 : null;
+        this.address2 = StringUtils.hasText(address2) ? address2 : null;
+        this.city = StringUtils.hasText(city) ? city : null;
+        this.state = StringUtils.hasText(state) ? state : null;
+        this.postalCode = StringUtils.hasText(postalCode) ? postalCode : null;
     }
 }

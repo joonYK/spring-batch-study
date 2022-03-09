@@ -1,6 +1,7 @@
 package jy.study.springBatch.domain.customer;
 
 import lombok.Getter;
+import org.springframework.util.StringUtils;
 
 @Getter
 public class CustomerNameUpdate extends CustomerUpdate {
@@ -13,8 +14,8 @@ public class CustomerNameUpdate extends CustomerUpdate {
 
     public CustomerNameUpdate(long customerId, String firstName, String middleName, String lastName) {
         super(customerId);
-        this.firstName = firstName;
-        this.middleName = middleName;
-        this.lastName = lastName;
+        this.firstName = StringUtils.hasText(firstName) ? firstName : null;
+        this.middleName = StringUtils.hasText(middleName) ? middleName : null;
+        this.lastName = StringUtils.hasText(lastName) ? lastName : null;
     }
 }
