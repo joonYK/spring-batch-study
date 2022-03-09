@@ -3,6 +3,7 @@ package jy.study.springBatch.itemProcessor;
 import jy.study.springBatch.domain.customer.CustomerUpdate;
 import org.springframework.batch.item.validator.ValidationException;
 import org.springframework.batch.item.validator.Validator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +23,7 @@ public class CustomerItemValidator implements Validator<CustomerUpdate> {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Autowired
     public CustomerItemValidator(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
