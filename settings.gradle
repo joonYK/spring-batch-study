@@ -41,4 +41,5 @@ include 'chapter9-multiResource-flatFile'
 include 'chapter9-composite'
 include 'chapter9-classifierComposite'
 include 'chapter10-exampleApplication'
+include 'chapter11-extension-and-tuning'
 
