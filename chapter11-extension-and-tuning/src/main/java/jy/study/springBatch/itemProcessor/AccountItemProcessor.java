@@ -49,10 +49,10 @@ public class AccountItemProcessor implements ItemProcessor<Statement, Statement>
         //---------
 
         //메모리 누수 발생시키기
-        String memoryBuster = "memoryBuster";
-        for (int i = 0; i < 200; i++) {
-            memoryBuster += memoryBuster;
-        }
+//        String memoryBuster = "memoryBuster";
+//        for (int i = 0; i < 200; i++) {
+//            memoryBuster += memoryBuster;
+//        }
         //---------
 
         String sql =

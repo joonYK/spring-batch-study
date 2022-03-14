@@ -22,7 +22,7 @@ public class ImportJobConfiguration {
 
     private final Step generateStatements;
 
-    @Bean
+    //@Bean
     public Job job() {
         return this.jobBuilderFactory.get("importJob")
                 .start(importCustomerUpdates)

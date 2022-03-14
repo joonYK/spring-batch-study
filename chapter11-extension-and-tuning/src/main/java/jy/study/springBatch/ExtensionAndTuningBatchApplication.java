@@ -12,7 +12,8 @@ public class ExtensionAndTuningBatchApplication {
         SpringApplication.run(ExtensionAndTuningBatchApplication.class,
                 "customerUpdateFile=/input/customer_update.csv",
                 "transactionFile=/input/transactions.xml",
-                "outputDirectory=output");
+                "outputDirectory=output",
+                "inputFlatFile=/input/bigTransactions.csv");
 
     }
 }
