@@ -26,6 +26,33 @@ public class AccountItemProcessor implements ItemProcessor<Statement, Statement>
 
     @Override
     public Statement process(Statement item) throws Exception {
+        /*
+         * CPU와 메모리 사용률을 올리기 위해 코드 추가. (VisualVM으로 확인)
+         * 여러 스레드에서 0과 100만 사이의 모든 소수를 계산.
+         */
+//        int threadCount = 10;
+//        CountDownLatch doneSignal = new CountDownLatch(threadCount);
+//
+//        for (int i = 0; i < threadCount; i++) {
+//            Thread thread = new Thread(() -> {
+//                for (int j = 0; j < 1000000; j++) {
+//                    new BigInteger(String.valueOf(j))
+//                            .isProbablePrime(0);
+//                }
+//                doneSignal.countDown();
+//            });
+//            thread.start();
+//        }
+//        doneSignal.await();
+        //---------
+
+        //메모리 누수 발생시키기 (VisualVM으로 확인)
+//        String memoryBuster = "memoryBuster";
+//        for (int i = 0; i < 200; i++) {
+//            memoryBuster += memoryBuster;
+//        }
+        //---------
+
         String sql =
                 "SELECT " +
                     "a.account_id," +
