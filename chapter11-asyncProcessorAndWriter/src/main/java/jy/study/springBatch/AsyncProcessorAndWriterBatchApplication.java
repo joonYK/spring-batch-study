@@ -7,34 +7,33 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
-import org.springframework.batch.core.job.builder.FlowBuilder;
-import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.integration.async.AsyncItemProcessor;
+import org.springframework.batch.integration.async.AsyncItemWriter;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
-import org.springframework.batch.item.xml.StaxEventItemReader;
-import org.springframework.batch.item.xml.builder.StaxEventItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import javax.sql.DataSource;
 
 /**
- * 모든 스텝을 병렬로 실행. ex) 서로 관련 없는 여러 파일을 가져옴.
- * 스텝이 서로 독립적인 경우에 성능을 향상시키려 할 때 유용함.
- * 플로우(재사용 가능한 스텝의 묶음)도 동시에 실행 가능.
+ * ItemProcessor에서 병목 현상이 있는 경우 AsyncItemProcessor를 사용해 새 스레드에서 동작시킴.
+ * 결과로 반환되는 Future가 AsyncItemWriter로 전달됨.
+ *
+ * 반드시 AsyncItemProcessor와 AsyncItemWriter를 함께 사용해야함.
  */
 @EnableBatchProcessing
 @SpringBootApplication
 @RequiredArgsConstructor
-public class ParallelStepsBatchApplication {
+public class AsyncProcessorAndWriterBatchApplication {
 
     private final JobBuilderFactory jobBuilderFactory;
 
@@ -63,23 +62,24 @@ public class ParallelStepsBatchApplication {
     }
 
     @Bean
-    @StepScope
-    public StaxEventItemReader<Transaction> xmlTransactionReader(
-            @Value("#{jobParameters['inputXmlFile']}") Resource resource
-    ) {
-        Jaxb2Marshaller unmarshaller = new Jaxb2Marshaller();
-        unmarshaller.setClassesToBeBound(Transaction.class);
+    public AsyncItemProcessor<Transaction, Transaction> asyncItemProcessor() {
+        AsyncItemProcessor<Transaction, Transaction> processor = new AsyncItemProcessor<>();
 
-        return new StaxEventItemReaderBuilder<Transaction>()
-                .name("xmlFileTransactionReader")
-                .resource(resource)
-                .addFragmentRootElements("transaction")
-                .unmarshaller(unmarshaller)
-                .build();
+        processor.setDelegate(processor());
+        processor.setTaskExecutor(new SimpleAsyncTaskExecutor());
+
+        return processor;
     }
 
     @Bean
-    @StepScope
+    public ItemProcessor<Transaction, Transaction> processor() {
+        return transaction -> {
+            Thread.sleep(5);
+            return transaction;
+        };
+    }
+
+    @Bean
     public JdbcBatchItemWriter<Transaction> writer(DataSource dataSource) {
         return new JdbcBatchItemWriterBuilder<Transaction>()
                 .dataSource(dataSource)
@@ -90,53 +90,34 @@ public class ParallelStepsBatchApplication {
     }
 
     @Bean
-    public Step step1() {
-        return this.stepBuilderFactory.get("step1")
-                .<Transaction, Transaction>chunk(100)
-                .reader(xmlTransactionReader(null))
-                .writer(writer(null))
-                .build();
+    public AsyncItemWriter<Transaction> asyncItemWriter() {
+        AsyncItemWriter<Transaction> writer = new AsyncItemWriter<>();
+        writer.setDelegate(writer(null));
+
+        return writer;
     }
 
     @Bean
-    public Step step2() {
-        return this.stepBuilderFactory.get("step2")
+    public Step step1Async() {
+        return this.stepBuilderFactory.get("step1Async")
                 .<Transaction, Transaction>chunk(100)
                 .reader(fileTransactionReader(null))
-                .writer(writer(null))
+                .processor((ItemProcessor) asyncItemProcessor())
+                .writer(asyncItemWriter())
                 .build();
     }
 
-    /**
-     * 2개의 플로우를 만들어서 2개의 스텝을 병렬로 실행
-     */
     @Bean
-    public Job parallelStepJob() {
-        Flow secondFlow = new FlowBuilder<Flow>("secondFlow")
-                .start(step2())
-                .build();
-
-        Flow parallelFlow = new FlowBuilder<Flow>("parallelFlow")
-                .start(step1())
-                /*
-                 * 여러 플로우를 병렬로 실행하려면 split 메서드를 사용해서 taskExecutor 구현체를 전달. (각 플로우는 자체 스레드에서 실행하게 됨)
-                 * split 메서드를 통해 병렬로 수행되도록 구성된 여러 플로우가 모두 완료된 이후에 다음 스텝이 실행됨.
-                 */
-                .split(new SimpleAsyncTaskExecutor())
-                .add(secondFlow)
-                .build();
-
-        return this.jobBuilderFactory.get("parallelStepsJob")
-                .start(parallelFlow)
-                .end()
+    public Job asyncJob() {
+        return this.jobBuilderFactory.get("asyncJob")
+                .start(step1Async())
                 .incrementer(new RunIdIncrementer())
                 .build();
     }
 
-    public static void main(String[] args) {
-        SpringApplication.run(ParallelStepsBatchApplication.class,
-                "inputFlatFile=/input/bigTransactions.csv",
-                "inputXmlFile=/input/bigTransactions.xml");
 
+    public static void main(String[] args) {
+        SpringApplication.run(AsyncProcessorAndWriterBatchApplication.class,
+                "inputFlatFile=/input/bigTransactions.csv");
     }
 }

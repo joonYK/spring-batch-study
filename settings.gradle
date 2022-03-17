@@ -43,4 +43,5 @@ include 'chapter9-classifierComposite'
 include 'chapter10-exampleApplication'
 include 'chapter11-multiThreadChunk'
 include 'chapter11-parallelSteps'
+include 'chapter11-asyncProcessorAndWriter'
 
